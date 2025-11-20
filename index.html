@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aging Portraits ∞ 2055</title>
+  
+  <!-- 9. PWA manifest — installable, immortal -->
+  <link rel="manifest" href="data:application/manifest+json,{
+    \"name\": \"Aging Portraits ∞ 2055\",
+    \"short_name\": \"∞2055\",
+    \"start_url\": \".\",
+    \"display\": \"standalone\",
+    \"background_color\": \"#ffffff\",
+    \"theme_color\": \"#ff0000\",
+    \"icons\": [{ \"src\": \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E\", \"sizes\": \"1x1\", \"type\": \"image/svg+xml\" }]
+  }">
+  <meta name="theme-color" content="#ff0000">
+
+  <style>
+    :root { 
+      --accent: #ff0000;
+      transition: --accent 0.92s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { -webkit-font-smoothing: subpixel-antialiased; }
+    @supports (-webkit-text-stroke: 0.5px transparent) {
+      .benediction, .info, .prompt { -webkit-text-stroke: 0.5px transparent; }
+    }
+    html, body { height:100%; background:#ffffff; overflow:hidden; font-family: Consolas, "Courier New", monospace; color:var(--accent); }
+    body { display:grid; grid-template-rows:auto 1fr; }
+    header { display:flex; justify-content:space-between; align-items:flex-start; padding:20px 30px 0; z-index:20; pointer-events:none; }
+    .title, .collection-link, .asset-link {
+      background:var(--accent); color:#fff; padding:8px 14px; letter-spacing:1px; pointer-events:all; cursor:pointer;
+      transition:all 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .title span { font-size:12.5px; opacity:0.89; letter-spacing:1.8px; line-height:1.35; margin-top:6px; display:block; }
+    .collection-link a, .asset-link a { color:#fff; text-decoration:none; }
+    .title { pointer-events:none; }
+    #frame {
+      grid-row:2; width:100vw; height:100%; border:none; z-index:1; pointer-events:all !important;
+      background:#ffffff; opacity:0; display:block; overflow:hidden;
+      transition:opacity 0.68s cubic-bezier(0.22,1,0.36,1);
+    }
+    footer { position:absolute; bottom:20px; left:56px; display:flex; flex-direction:column; max-width:540px; pointer-events:all; z-index:20; cursor:pointer; }
+    .benediction { font-size:14px; line-height:1.28; letter-spacing:0.6px; color:var(--accent)!important;
+      text-shadow:0 0 8px #fff,0 0 16px #fff,0 0 24px #fff,0 0 32px #fff,0 0 48px #fff,0 0 64px #fff;
+      opacity:0.98; transition:all 0.8s cubic-bezier(0.22,1,0.36,1); margin-bottom:40px; user-select:none; }
+    .info { font-size:13px; letter-spacing:1.5px; text-shadow:0 0 8px #fff,0 0 16px #fff,0 0 24px #fff; opacity:0.94; mix-blend-mode:difference; }
+    .prompt { font-size:11px; letter-spacing:2px; opacity:0.6; text-shadow:0 0 12px #fff; cursor:pointer; animation:blink 2.5s infinite; }
+    @keyframes blink { 50% { opacity:0.1; } }
+    .prompt:hover { opacity:1; transform:translateX(4px); transition:opacity .3s ease,transform .3s ease; }
+    .collection-link:hover, .asset-link:hover { background:#000; transform:translateY(-2px); }
+    @media (max-width:840px) {
+      header { padding:16px 20px 0; flex-direction:column; gap:12px; align-items:flex-start; }
+      .collection-link, .asset-link { align-self:flex-end; }
+      .benediction { font-size:13px; max-width:88%; line-height:1.32; }
+      footer { left:20px; bottom:16px; }
+      .info { font-size:12.5px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">AGING PORTRAITS<br><span>30-YEAR REAL-TIME AGING STUDY • 2025-10-16 → 2055-10-16<br>POST-2055: DAILY CYCLE (EVEN = AGED • ODD = ORIGINAL)</span></div>
+    <div class="collection-link"><a href="https://bazar.arweave.net/#/collection/HyzzmvsZifq3FiRjSNX6Rt0OamINcdfNbO5tvEjWDf0" target="_blank">View collection</a></div>
+    <div class="asset-link"><a id="assetHref" href="#" target="_blank">View asset</a></div>
+  </header>
+  <iframe id="frame" src="" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
+  <footer>
+    <div class="benediction">
+    Mind is living; mechanism is law.<br>
+    Machines extend the reach of mind but not its life.<br>
+    Their power and precision await the guidance of personality and the direction of spirit.<br><br>
+    When mind forgets spirit, civilization hardens into mechanism;<br>
+    when spirit illumines mind, civilization ascends toward beauty.<br><br>
+    Art is the bridge between them—<br>
+    the aesthetic ministry that unites pattern with light, reason with feeling, power with love.<br>
+    Through art, man revalues his machines and spiritualizes his world.<br><br>
+    Thus, the enduring task of every age is not to make mechanisms more human,<br>
+    but to make humans more spiritual—<br>
+    that through enlightened mind and inspired art,<br>
+    the material creations of man may become the luminous instruments of God.
+    </div>
+    <div class="info" id="info"></div>
+    <div class="prompt">CLICK • TAP • NEXT →</div>
+  </footer>
+
+<script>
+const portraits = [
+  { file: "2pac.html", color: "#ff0000", asset: "https://bazar.arweave.net/#/asset/rpeFqd9YpGla0ca97AqtDGZLmHsbLGUQJZyJhIYfqow" },
+  { file: "bruce-lee.html", color: "#aa8800", asset: "https://bazar.arweave.net/#/asset/7_DyqPQcwIcZIXdWe6XNVM3s6GFTC79TRnYyVjo71uo" },
+  { file: "esir.html", color: "#ff0000", asset: "https://bazar.arweave.net/#/asset/RydjHqylE783V-ARQSQqIIcy1USq-K8tnJ6QR9cOf-A" },
+  { file: "marilyn-monroe.html", color: "#5c5c5c", asset: "https://bazar.arweave.net/#/asset/z-4jgyc9n7xmWVRiwmxnBp33HrEyQV8wceLPBRG_s7g" },
+  { file: "princess-diana.html", color: "#de7a00", asset: "https://bazar.arweave.net/#/asset/anLL7r9JzPRSD1rg7tBiJFJzD-6j-f_HeB8Q8jAj9q0" },
+  { file: "xxxtentacion.html", color: "#006fc5", asset: "https://bazar.arweave.net/#/asset/8b-TNGjQEvH5iBb-7WrfBxplolZ-2O0BeZCJ6sZz9E8" }
+];
+
+let current = -1;
+let firstLoad = true;
+let isTransitioning = false;
+let cacheBuster = 0;
+let lastInfo = "";
+let tickerRunning = false;
+
+const iframe = document.getElementById("frame");
+const infoEl = document.getElementById("info");
+const assetEl = document.getElementById("assetHref");
+
+// Preload
+portraits.forEach(p => {
+  const link = document.createElement("link");
+  link.rel = "prefetch";
+  link.href = p.file;
+  document.head.appendChild(link);
+});
+
+// Time logic
+const START = new Date("2025-10-16T00:00:00").getTime();
+const END = new Date("2055-10-16T00:00:00").getTime();
+const TOTAL = END - START;
+
+function applyTheme(c) { document.documentElement.style.setProperty("--accent", c); }
+
+function formatRemaining(ms) {
+  const years = Math.floor(ms / (365.25 * 86400000));
+  const days = Math.floor((ms % (365.25 * 86400000)) / 86400000);
+  const hrs = Math.floor((ms % 86400000) / 3600000);
+  const min = Math.floor((ms % 3600000) / 60000);
+  const sec = Math.floor((ms % 60000) / 1000);
+  const millis = String(ms % 1000).padStart(3, "0");
+  return years > 0 ? `${years}y ${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`
+                   : `${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`;
+}
+
+function updateInfo() {
+  const now = Date.now();
+  let text;
+  if (now < END) {
+    const progress = ((now - START) / TOTAL) * 100;
+    text = `${progress.toFixed(6)}% aged — ${formatRemaining(END - now)} remaining`;
+  } else {
+    const daysSince = Math.floor((now - END) / 86400000);
+    const state = daysSince % 2 === 0 ? "OLD" : "YOUNG";
+    text = `ETERNAL CYCLE • DAY ${daysSince} • CURRENTLY ${state}`;
+  }
+  if (text !== lastInfo) infoEl.textContent = lastInfo = text;
+}
+
+// Live ticker — the pulse of the 30-year piece
+function startTicker() {
+  if (tickerRunning) return;
+  tickerRunning = true;
+  const tick = () => {
+    updateInfo();
+    requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+function nextPortrait() {
+  if (isTransitioning) return;
+  isTransitioning = true;
+
+  current = (current + 1) % portraits.length;
+  const p = portraits[current];
+
+  if (firstLoad) {
+    iframe.src = p.file;
+    firstLoad = false;
+  } else {
+    iframe.style.opacity = "0";
+    setTimeout(() => {
+      iframe.src = p.file + "?v=" + (++cacheBuster);
+    }, 700);
+  }
+
+  applyTheme(p.color);
+  updateInfo();
+  assetEl.href = p.asset;
+}
+
+iframe.onload = () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    iframe.style.opacity = "1";
+    isTransitioning = false;
+  }));
+};
+
+const advance = (e) => {
+  if (e.target.closest("a")) return;
+  e.preventDefault();
+  nextPortrait();
+};
+
+document.addEventListener("keydown", e => {
+  if (["ArrowRight", " ", "Enter"].includes(e.key)) {
+    e.preventDefault();
+    nextPortrait();
+  }
+});
+
+document.addEventListener("pointerdown", advance);
+document.querySelector("footer").addEventListener("pointerdown", advance);
+
+// ONE AND ONLY load handler — random start + live ticker
+window.addEventListener("load", () => {
+  current = Math.floor(Math.random() * portraits.length) - 1;
+  nextPortrait();
+  startTicker();
+});
+</script>
+</body>
+</html>
