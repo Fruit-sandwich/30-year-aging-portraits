@@ -1,104 +1,109 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aging Portraits ∞ 2055</title>
-  
-  <!-- 9. PWA manifest — installable, immortal -->
-  <link rel="manifest" href="data:application/manifest+json,{
-    \"name\": \"Aging Portraits ∞ 2055\",
-    \"short_name\": \"∞2055\",
-    \"start_url\": \".\",
-    \"display\": \"standalone\",
-    \"background_color\": \"#ffffff\",
-    \"theme_color\": \"#ff0000\",
-    \"icons\": [{ \"src\": \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E\", \"sizes\": \"1x1\", \"type\": \"image/svg+xml\" }]
-  }">
-  <meta name="theme-color" content="#ff0000">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aging Portraits ∞ 2055</title>
+
+<link rel="manifest" href="data:application/manifest+json,{
+  \"name\": \"Aging Portraits ∞ 2055\",
+  \"short_name\": \"∞2055\",
+  \"start_url\": \".\",
+  \"display\": \"standalone\",
+  \"background_color\": \"#ffffff\",
+  \"theme_color\": \"#ff0000\",
+  \"icons\": [{ \"src\": \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E\", \"sizes\": \"1x1\", \"type\": \"image/svg+xml\" }]
+}">
+<meta name="theme-color" content="#ff0000">
 
 <style>
-  :root {
-    --accent: #ff0000;
-    transition: --accent 0.92s cubic-bezier(0.22, 1, 0.36, 1);
-  }
+  :root { --accent:#ff0000; transition:var(--accent) .92s cubic-bezier(.22,1,.36,1); }
   * { margin:0; padding:0; box-sizing:border-box; }
-  html { -webkit-font-smoothing: subpixel-antialiased; }
-  html, body { 
-    height:100%; background:#ffffff; overflow:hidden; 
-    font-family: Consolas, "Courier New", monospace; color:var(--accent); 
-  }
-  body { display:grid; grid-template-rows:auto 1fr; }
+  html { -webkit-font-smoothing:subpixel-antialiased; }
+  html,body { height:100%; background:#fff; overflow:hidden; font-family:Consolas,"Courier New",monospace; color:var(--accent); }
+  body { display:grid; grid-template-rows:auto 1fr; position:relative; }
 
-  header { 
-    display:flex; justify-content:space-between; align-items:flex-start; 
-    padding:20px 30px 0; z-index:20; pointer-events:none; 
+  header { display:flex; flex-direction:column; gap:18px; padding:20px 30px 10px; z-index:20; pointer-events:none; }
+  .header-top { display:flex; justify-content:space-between; align-items:flex-start; width:100%; }
+  .header-bottom { display:flex; justify-content:space-between; align-items:flex-end; width:100%; }
+  .title,.collection-link,.asset-link {
+    background:var(--accent); color:#fff; padding:8px 14px; letter-spacing:1px;
+    pointer-events:all; cursor:pointer; transition:all .6s cubic-bezier(.22,1,.36,1);
   }
-  .title, .collection-link, .asset-link {
-    background:var(--accent); color:#fff; padding:8px 14px; letter-spacing:1px; 
-    pointer-events:all; cursor:pointer;
-    transition:all 0.6s cubic-bezier(0.22,1,0.36,1);
+  .title span { font-size:12.5px; opacity:.89; letter-spacing:1.8px; line-height:1.35; margin-top:6px; display:block; }
+  .collection-link a,.asset-link a { color:#fff; text-decoration:none; }
+
+  .info { font-size:13px; letter-spacing:1.5px; opacity:.94; pointer-events:none; }
+  .prompt { font-size:11px; letter-spacing:2px; opacity:.6; pointer-events:all; cursor:pointer; animation:blink 2.5s infinite; }
+  @keyframes blink { 50%{opacity:.15} }
+  .prompt:hover,.prompt:active { opacity:1; transform:translateX(4px); }
+  .prompt:active { transform:translateX(8px) scale(1.08); }
+
+  /* Sharp white outline text */
+  .benediction,.info,.prompt,.loading-text {
+    color:var(--accent);
+    -webkit-text-stroke:1.4px #ffffff;
+    text-stroke:1.4px #ffffff;
+    paint-order:stroke fill;
   }
-  .title span { font-size:12.5px; opacity:0.89; letter-spacing:1.8px; line-height:1.35; margin-top:6px; display:block; }
-  .collection-link a, .asset-link a { color:#fff; text-decoration:none; }
+
+  /* Loading text — perfectly centered */
+  .loading-text {
+    position:absolute; inset:0; display:grid; place-items:center;
+    font-size:13px; letter-spacing:2px; pointer-events:none;
+    animation:blink 1.8s infinite; z-index:30;
+  }
 
   #frame {
-    grid-row:2; width:100vw; height:100%; border:none; z-index:1; pointer-events:all;
-    background:#ffffff; opacity:0; overflow:hidden;
-    transition:opacity 0.68s cubic-bezier(0.22,1,0.36,1);
+    grid-row:2; width:100vw; height:100%; border:none; background:#fff; opacity:0;
+    transition:opacity .68s cubic-bezier(.22,1,.36,1); z-index:1;
   }
 
-  footer { 
-    position:absolute; bottom:20px; left:56px; display:flex; flex-direction:column; 
-    max-width:540px; pointer-events:all; z-index:20; cursor:pointer; 
+  footer { position:absolute; bottom:20px; left:56px; max-width:540px; pointer-events:none; z-index:20; }
+  .benediction { font-size:12px; line-height:1.28; letter-spacing:.6px; opacity:.98; user-select:none; }
+
+  .collection-link:hover,.asset-link:hover { background:#242424; transform:translateY(-2px); }
+
+  @media (min-width:841px) {
+    footer { bottom:11vh; left:5.8vw; max-width:520px; }
+    .benediction { font-size:13.8px; line-height:1.36; }
   }
 
-  /* Sharp, fast, readable white outline for all overlay text */
-  .benediction, .info, .prompt {
-    color: var(--accent);
-    -webkit-text-stroke: 1.4px #ffffff;
-    text-stroke: 1.4px #ffffff;
-    paint-order: stroke fill;
-    text-shadow: none !important;   /* kills the old expensive glows */
-  }
-
-  .benediction {
-    font-size:14px; line-height:1.28; letter-spacing:0.6px;
-    opacity:0.98; transition:all 0.8s cubic-bezier(0.22,1,0.36,1);
-    margin-bottom:40px; user-select:none;
-  }
-  .info { font-size:13px; letter-spacing:1.5px; opacity:0.94; }
-  .prompt { 
-    font-size:11px; letter-spacing:2px; opacity:0.6; cursor:pointer; 
-    animation: blink 2.5s infinite; 
-  }
-  @keyframes blink { 50% { opacity:0.1; } }
-  .prompt:hover { opacity:1; transform:translateX(4px); transition:0.3s; }
-  .collection-link:hover, .asset-link:hover { background:#242424; transform:translateY(-2px); }
-
-  /* MOBILE LAYOUT */
-  @media (max-width: 840px) {
-    header { padding:16px 20px 0; flex-direction:column; gap:12px; align-items:flex-start; }
-    .collection-link, .asset-link { align-self:flex-end; }
-    .benediction { font-size:13px; max-width:88%; line-height:1.32; }
+  @media (max-width:840px) {
+    header { padding:16px 20px 10px; gap:14px; }
+    .header-top { flex-direction:column; gap:12px; align-items:flex-start; }
+    .collection-link,.asset-link { align-self:flex-end; }
+    .header-bottom { flex-direction:column; align-items:flex-start; gap:8px; }
     .info { font-size:12.5px; }
-
-    html, body { height:auto; min-height:100vh; overflow-y:auto; overflow-x:hidden; }
-    body { display:flex; flex-direction:column; min-height:100vh; }
-    footer { position:static; padding:20px 20px 60px; background:#ffffff; }
+    .prompt { align-self:flex-end; }
+    .benediction { font-size:13px; max-width:88%; line-height:1.32; }
+    html,body { height:auto; min-height:100vh; overflow-y:auto; overflow-x:hidden; }
+    body { display:flex; flex-direction:column; }
+    footer { position:static; padding:20px 20px 60px; background:#fff; pointer-events:all; }
     #frame { height:66vh; min-height:300px; flex-shrink:0; }
   }
 </style>
 </head>
 <body>
-  <header>
+
+<header>
+  <div class="header-top">
     <div class="title">AGING PORTRAITS<br><span>30-YEAR REAL-TIME AGING STUDY • 2025-10-16 → 2055-10-16<br>POST-2055: DAILY CYCLE (EVEN = AGED • ODD = ORIGINAL)</span></div>
     <div class="collection-link"><a href="https://bazar.arweave.net/#/collection/HyzzmvsZifq3FiRjSNX6Rt0OamINcdfNbO5tvEjWDf0" target="_blank">View collection</a></div>
     <div class="asset-link"><a id="assetHref" href="#" target="_blank">View asset</a></div>
-  </header>
-  <iframe id="frame" src="" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
-  <footer>
-    <div class="benediction">
+  </div>
+  <div class="header-bottom">
+    <div class="info" id="info"></div>
+    <div class="prompt">CLICK • TAP • NEXT →</div>
+  </div>
+</header>
+
+<div class="loading-text" id="loadingText">Loading portrait …</div>
+
+<iframe id="frame" src="" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
+
+<footer>
+  <div class="benediction">
     Mind is living; mechanism is law.<br>
     Machines extend the reach of mind but not its life.<br>
     Their power and precision await the guidance of personality and the direction of spirit.<br><br>
@@ -111,161 +116,110 @@
     but to make humans more spiritual—<br>
     that through enlightened mind and inspired art,<br>
     the material creations of man may become the luminous instruments of God.
-    </div>
-    <div class="info" id="info"></div>
-    <div class="prompt">CLICK • TAP • NEXT →</div>
-  </footer>
+  </div>
+</footer>
 
 <script>
   const portraits = [
-    { file: "2pac.html", color: "#ff0000", asset: "https://bazar.arweave.net/#/asset/rpeFqd9YpGla0ca97AqtDGZLmHsbLGUQJZyJhIYfqow" },
-    { file: "bruce-lee.html", color: "#aa8800", asset: "https://bazar.arweave.net/#/asset/7_DyqPQcwIcZIXdWe6XNVM3s6GFTC79TRnYyVjo71uo" },
-    { file: "esir.html", color: "#ff0000", asset: "https://bazar.arweave.net/#/asset/RydjHqylE783V-ARQSQqIIcy1USq-K8tnJ6QR9cOf-A" },
-    { file: "marilyn-monroe.html", color: "#5c5c5c", asset: "https://bazar.arweave.net/#/asset/z-4jgyc9n7xmWVRiwmxnBp33HrEyQV8wceLPBRG_s7g" },
-    { file: "princess-diana.html", color: "#de7a00", asset: "https://bazar.arweave.net/#/asset/anLL7r9JzPRSD1rg7tBiJFJzD-6j-f_HeB8Q8jAj9q0" },
-    { file: "xxxtentacion.html", color: "#006fc5", asset: "https://bazar.arweave.net/#/asset/8b-TNGjQEvH5iBb-7WrfBxplolZ-2O0BeZCJ6sZz9E8" }
+    { file:"2pac.html",color:"#ff0000",asset:"https://bazar.arweave.net/#/asset/rpeFqd9YpGla0ca97AqtDGZLmHsbLGUQJZyJhIYfqow"},
+    {file:"bruce-lee.html",color:"#aa8800",asset:"https://bazar.arweave.net/#/asset/7_DyqPQcwIcZIXdWe6XNVM3s6GFTC79TRnYyVjo71uo"},
+    {file:"esir.html",color:"#ff0000",asset:"https://bazar.arweave.net/#/asset/RydjHqylE783V-ARQSQqIIcy1USq-K8tnJ6QR9cOf-A"},
+    {file:"marilyn-monroe.html",color:"#5c5c5c",asset:"https://bazar.arweave.net/#/asset/z-4jgyc9n7xmWVRiwmxnBp33HrEyQV8wceLPBRG_s7g"},
+    {file:"princess-diana.html",color:"#de7a00",asset:"https://bazar.arweave.net/#/asset/anLL7r9JzPRSD1rg7tBiJFJzD-6j-f_HeB8Q8jAj9q0"},
+    {file:"xxxtentacion.html",color:"#006fc5",asset:"https://bazar.arweave.net/#/asset/8b-TNGjQEvH5iBb-7WrfBxplolZ-2O0BeZCJ6sZz9E8"}
   ];
 
-  let current = -1;
-  let firstLoad = true;
-  let isTransitioning = false;
-  let cacheBuster = 0;
-  let lastInfo = "";
-  let tickerInterval = null;
+  let current=-1, firstLoad=true, isTransitioning=false, cacheBuster=0, lastInfo="", tickerInterval=null;
 
   const iframe = document.getElementById("frame");
   const infoEl = document.getElementById("info");
   const assetEl = document.getElementById("assetHref");
   const promptEl = document.querySelector(".prompt");
+  const loadingEl = document.getElementById("loadingText");
 
-  // ── Preload ─────────────────────────────────────
-  portraits.forEach(p => {
-    const link = document.createElement("link");
-    link.rel = "prefetch";
-    link.href = p.file;
-    document.head.appendChild(link);
-  });
+  // Prefetch
+  portraits.forEach(p=>{const l=document.createElement("link");l.rel="prefetch";l.href=p.file;document.head.appendChild(l);});
 
-  // ── Date logic (unchanged) ──────────────────────
   const START = new Date("2025-10-16T00:00:00").getTime();
   const END   = new Date("2055-10-16T00:00:00").getTime();
   const TOTAL = END - START;
 
-  function applyTheme(c) {
-    document.documentElement.style.setProperty("--accent", c);
+  function applyTheme(c){ document.documentElement.style.setProperty("--accent",c); }
+
+  function formatRemaining(ms){
+    const years=Math.floor(ms/(365.25*86400000));
+    const days=Math.floor((ms%(365.25*86400000))/86400000);
+    const hrs=Math.floor((ms%86400000)/3600000);
+    const min=Math.floor((ms%3600000)/60000);
+    const sec=Math.floor((ms%60000)/1000);
+    const millis=String(ms%1000).padStart(3,"0");
+    return years>0?`${years}y ${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`
+                 :`${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`;
   }
 
-  function formatRemaining(ms) {
-    const years = Math.floor(ms / (365.25 * 86400000));
-    const days  = Math.floor((ms % (365.25 * 86400000)) / 86400000);
-    const hrs   = Math.floor((ms % 86400000) / 3600000);
-    const min   = Math.floor((ms % 3600000) / 60000);
-    const sec   = Math.floor((ms % 60000) / 1000);
-    const millis = String(ms % 1000).padStart(3, "0");
-    return years > 0
-      ? `${years}y ${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`
-      : `${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`;
-  }
-
-  function updateInfo() {
-    const now = Date.now();
+  function updateInfo(){
+    const now=Date.now();
     let text;
-    if (now < END) {
-      const progress = ((now - START) / TOTAL) * 100;
-      text = `${progress.toFixed(6)}% aged — ${formatRemaining(END - now)} remaining`;
-    } else {
-      const daysSince = Math.floor((now - END) / 86400000);
-      const state = daysSince % 2 === 0 ? "OLD" : "YOUNG";
-      text = `ETERNAL CYCLE • DAY ${daysSince} • CURRENTLY ${state}`;
+    if(now<END){
+      const progress=((now-START)/TOTAL)*100;
+      text=`${progress.toFixed(6)}% aged — ${formatRemaining(END-now)} remaining`;
+    }else{
+      const daysSince=Math.floor((now-END)/86400000);
+      const state=daysSince%2===0?"OLD":"YOUNG";
+      text=`ETERNAL CYCLE • DAY ${daysSince} • CURRENTLY ${state}`;
     }
-    if (text !== lastInfo) {
-      infoEl.textContent = lastInfo = text;
-    }
+    if(text!==lastInfo) infoEl.textContent=lastInfo=text;
   }
 
-  function startTicker() {
-    if (tickerInterval) clearInterval(tickerInterval);
-    const now = Date.now();
-    const interval = now < END ? 1000 : 60000;
+  function startTicker(){
+    if(tickerInterval) clearInterval(tickerInterval);
+    const interval=Date.now()<END?50:60000;
     updateInfo();
-    tickerInterval = setInterval(updateInfo, interval);
+    tickerInterval=setInterval(updateInfo,interval);
   }
 
-  // ── Core transition logic ───────────────────────
-  function nextPortrait() {
-    if (isTransitioning) return;
-    isTransitioning = true;
+  function nextPortrait(){
+    if(isTransitioning) return;
+    isTransitioning=true;
+    current=(current+1)%portraits.length;
+    const p=portraits[current];
 
-    current = (current + 1) % portraits.length;
-    const p = portraits[current];
-
-    if (firstLoad) {
-      iframe.src = p.file;
-      firstLoad = false;
-    } else {
-      iframe.style.opacity = "0";
-      setTimeout(() => {
-        iframe.src = p.file + "?v=" + (++cacheBuster);
-      }, 120);   // snappier than 700ms
+    if(firstLoad){
+      iframe.src=p.file;
+      firstLoad=false;
+    }else{
+      iframe.style.opacity="0";
+      setTimeout(()=>{ iframe.src=p.file+"?v="+(++cacheBuster); },120);
     }
-
     applyTheme(p.color);
-    assetEl.href = p.asset;
+    assetEl.href=p.asset;
     startTicker();
   }
 
-  iframe.onload = () => {
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      iframe.style.opacity = "1";
-      isTransitioning = false;
-    }));
+  iframe.onload=()=>{
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{
+      iframe.style.opacity="1";
+      loadingEl.style.display="none";
+      isTransitioning=false;
+    })});
   };
 
-  // ── NEW: Controlled advance ONLY on prompt or keyboard ─────
-  const advance = (e) => {
-    e?.preventDefault();
-    nextPortrait();
-  };
-
-  // 1. Tap only the prompt
-  promptEl.addEventListener("pointerdown", advance);
-
-  // 2. Keyboard (Space, Enter, Right arrow)
-  document.addEventListener("keydown", e => {
-    if ([" ", "Enter", "ArrowRight"].includes(e.key)) {
-      e.preventDefault();
-      advance();
-    }
+  const advance=e=>{ e?.preventDefault(); nextPortrait(); };
+  promptEl.addEventListener("pointerdown",advance);
+  document.addEventListener("keydown",e=>{
+    if([" ","Enter","ArrowRight"].includes(e.key)){ e.preventDefault(); advance(); }
   });
 
-  // ── Initial random portrait ─────────────────────
-  window.addEventListener("load", () => {
-    current = Math.floor(Math.random() * portraits.length) - 1;
+  window.addEventListener("load",()=>{
+    current=Math.floor(Math.random()*portraits.length)-1;
     nextPortrait();
   });
 
-  // ── Analytics (unchanged) ───────────────────────
-  (function() {
-    const ANALYTICS_CONFIG = {
-      src: 'https://analytics_arlink.ar.io/browser.js',
-      processId: 'x7-bu_KON6GQ6W1XBAK2FZavYAuC7v01iz2no8srvNA',
-      trackUrlHashes: true,
-      debug: false
-    };
-    function init() {
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = ANALYTICS_CONFIG.src;
-      script.setAttribute('data-process-id', ANALYTICS_CONFIG.processId);
-      script.setAttribute('data-track-url-hashes', ANALYTICS_CONFIG.trackUrlHashes);
-      script.setAttribute('data-debug', ANALYTICS_CONFIG.debug);
-      document.body.appendChild(script);
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
+  // Analytics
+  (function(){
+    const cfg={src:'https://analytics_arlink.ar.io/browser.js',processId:'x7-bu_KON6GQ6W1XBAK2FZavYAuC7v01iz2no8srvNA',trackUrlHashes:true,debug:false};
+    const init=()=>{const s=document.createElement('script');s.type='module';s.src=cfg.src;s.dataset.processId=cfg.processId;s.dataset.trackUrlHashes=cfg.trackUrlHashes;s.dataset.debug=cfg.debug;document.body.appendChild(s);};
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
   })();
 </script>
 </body>
