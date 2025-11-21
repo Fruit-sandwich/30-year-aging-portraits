@@ -50,14 +50,96 @@
     .prompt { font-size:11px; letter-spacing:2px; opacity:0.6; text-shadow:0 0 12px #fff; cursor:pointer; animation:blink 2.5s infinite; }
     @keyframes blink { 50% { opacity:0.1; } }
     .prompt:hover { opacity:1; transform:translateX(4px); transition:opacity .3s ease,transform .3s ease; }
-    .collection-link:hover, .asset-link:hover { background:#000; transform:translateY(-2px); }
-    @media (max-width:840px) {
-      header { padding:16px 20px 0; flex-direction:column; gap:12px; align-items:flex-start; }
-      .collection-link, .asset-link { align-self:flex-end; }
-      .benediction { font-size:13px; max-width:88%; line-height:1.32; }
-      footer { left:20px; bottom:16px; }
-      .info { font-size:12.5px; }
-    }
+    .collection-link:hover, .asset-link:hover { background:#ffffff; transform:translateY(-2px); }
+   /* BASE — desktop behaviour (benediction floats over image) */ 
+    footer { 
+  position: absolute; 
+  bottom: 20px; 
+  left: 56px; 
+  display: flex; 
+  flex-direction: column; 
+  max-width: 540px; 
+  pointer-events: all; 
+  z-index: 20; 
+  cursor: pointer; 
+}
+    
+  /* MOBILE ONLY — footer moves BELOW the portrait */
+@media (max-width: 840px) {
+  header { 
+    padding: 16px 20px 0; 
+    flex-direction: column; 
+    gap: 12px; 
+    align-items: flex-start; 
+  }
+  .collection-link, .asset-link { 
+    align-self: flex-end; 
+  }
+  .benediction { 
+    font-size: 13px; 
+    max-width: 88%; 
+    line-height: 1.32; 
+  }
+  .info { 
+    font-size: 12.5px; 
+  }
+
+  /* THE SWITCH */
+  footer { 
+    position: static !important;      /* no longer absolute → flows normally */
+    padding: 20px 20px 60px;          /* generous bottom space for PWA */
+    background: #ffffff;
+  }
+  #frame {
+    height: calc(100vh - 340px);       /* reserves exact space for the long benediction */
+    max-height: 66vh;
+  }
+}
+    
+    /* 1. Enable scrolling on mobile (this is the real root cause of clipping) */
+@media (max-width: 840px) {
+  html, body {
+    height: auto;           /* was 100% → trapped content */
+    min-height: 100vh;
+    overflow-y: auto;       /* THIS is what lets you scroll to the end */
+    overflow-x: hidden;
+  }
+}
+
+/* 2. Switch body from rigid grid → natural flow on mobile */
+@media (max-width: 840px) {
+  body {
+    display: flex;          /* replaces grid */
+    flex-direction: column;
+    min-height: 100vh;
+  }
+}
+
+/* 3. Give iframe flexible but cinematic height on mobile */
+@media (optional but feels expensive) */
+@media (max-width: 840px) {
+  #frame {
+    width: 100%;
+    height: 66vh;           /* or 70vh — your call */
+    min-height: 300px;
+    flex-shrink: 0;
+    /* remove the calc(100vh - 340px) — it was fragile */
+  }
+}
+    @media (max-width: 840px) {
+ 
+
+   .info {
+    mix-blend-mode: normal !important;     /* disables broken difference */
+    color: var(--accent) !important;       /* forces pure accent red */
+    text-shadow: 
+      0 0 8px #fff,
+      0 0 16px #fff,
+      0 0 24px #fff,
+      0 0 32px var(--accent),
+      0 0 48px var(--accent) !important;
+  }
+}
   </style>
 </head>
 <body>
