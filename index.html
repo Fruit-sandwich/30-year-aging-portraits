@@ -169,128 +169,134 @@
   </footer>
 
 <script>
-const portraits = [
-  { file: "2pac.html", color: "#ff0000", asset: "https://bazar.arweave.net/#/asset/rpeFqd9YpGla0ca97AqtDGZLmHsbLGUQJZyJhIYfqow" },
-  { file: "bruce-lee.html", color: "#aa8800", asset: "https://bazar.arweave.net/#/asset/7_DyqPQcwIcZIXdWe6XNVM3s6GFTC79TRnYyVjo71uo" },
-  { file: "esir.html", color: "#ff0000", asset: "https://bazar.arweave.net/#/asset/RydjHqylE783V-ARQSQqIIcy1USq-K8tnJ6QR9cOf-A" },
-  { file: "marilyn-monroe.html", color: "#5c5c5c", asset: "https://bazar.arweave.net/#/asset/z-4jgyc9n7xmWVRiwmxnBp33HrEyQV8wceLPBRG_s7g" },
-  { file: "princess-diana.html", color: "#de7a00", asset: "https://bazar.arweave.net/#/asset/anLL7r9JzPRSD1rg7tBiJFJzD-6j-f_HeB8Q8jAj9q0" },
-  { file: "xxxtentacion.html", color: "#006fc5", asset: "https://bazar.arweave.net/#/asset/8b-TNGjQEvH5iBb-7WrfBxplolZ-2O0BeZCJ6sZz9E8" }
-];
+  const portraits = [
+    { file: "2pac.html", color: "#ff0000", asset: "https://bazar.arweave.net/#/asset/rpeFqd9YpGla0ca97AqtDGZLmHsbLGUQJZyJhIYfqow" },
+    { file: "bruce-lee.html", color: "#aa8800", asset: "https://bazar.arweave.net/#/asset/7_DyqPQcwIcZIXdWe6XNVM3s6GFTC79TRnYyVjo71uo" },
+    { file: "esir.html", color: "#ff0000", asset: "https://bazar.arweave.net/#/asset/RydjHqylE783V-ARQSQqIIcy1USq-K8tnJ6QR9cOf-A" },
+    { file: "marilyn-monroe.html", color: "#5c5c5c", asset: "https://bazar.arweave.net/#/asset/z-4jgyc9n7xmWVRiwmxnBp33HrEyQV8wceLPBRG_s7g" },
+    { file: "princess-diana.html", color: "#de7a00", asset: "https://bazar.arweave.net/#/asset/anLL7r9JzPRSD1rg7tBiJFJzD-6j-f_HeB8Q8jAj9q0" },
+    { file: "xxxtentacion.html", color: "#006fc5", asset: "https://bazar.arweave.net/#/asset/8b-TNGjQEvH5iBb-7WrfBxplolZ-2O0BeZCJ6sZz9E8" }
+  ];
 
-let current = -1;
-let firstLoad = true;
-let isTransitioning = false;
-let cacheBuster = 0;
-let lastInfo = "";
-let tickerRunning = false;
+  let current = -1;
+  let firstLoad = true;
+  let isTransitioning = false;
+  let cacheBuster = 0;
+  let lastInfo = "";
+  let tickerInterval = null;
 
-const iframe = document.getElementById("frame");
-const infoEl = document.getElementById("info");
-const assetEl = document.getElementById("assetHref");
+  const iframe = document.getElementById("frame");
+  const infoEl = document.getElementById("info");
+  const assetEl = document.getElementById("assetHref");
 
-// Preload
-portraits.forEach(p => {
-  const link = document.createElement("link");
-  link.rel = "prefetch";
-  link.href = p.file;
-  document.head.appendChild(link);
-});
+  // Preload
+  portraits.forEach(p => {
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = p.file;
+    document.head.appendChild(link);
+  });
 
-// Time logic
-const START = new Date("2025-10-16T00:00:00").getTime();
-const END = new Date("2055-10-16T00:00:00").getTime();
-const TOTAL = END - START;
+  const START = new Date("2025-10-16T00:00:00").getTime();
+  const END   = new Date("2055-10-16T00:00:00").getTime();
+  const TOTAL = END - START;
 
-function applyTheme(c) { document.documentElement.style.setProperty("--accent", c); }
-
-function formatRemaining(ms) {
-  const years = Math.floor(ms / (365.25 * 86400000));
-  const days = Math.floor((ms % (365.25 * 86400000)) / 86400000);
-  const hrs = Math.floor((ms % 86400000) / 3600000);
-  const min = Math.floor((ms % 3600000) / 60000);
-  const sec = Math.floor((ms % 60000) / 1000);
-  const millis = String(ms % 1000).padStart(3, "0");
-  return years > 0 ? `${years}y ${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`
-                   : `${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`;
-}
-
-function updateInfo() {
-  const now = Date.now();
-  let text;
-  if (now < END) {
-    const progress = ((now - START) / TOTAL) * 100;
-    text = `${progress.toFixed(6)}% aged — ${formatRemaining(END - now)} remaining`;
-  } else {
-    const daysSince = Math.floor((now - END) / 86400000);
-    const state = daysSince % 2 === 0 ? "OLD" : "YOUNG";
-    text = `ETERNAL CYCLE • DAY ${daysSince} • CURRENTLY ${state}`;
+  function applyTheme(c) {
+    document.documentElement.style.setProperty("--accent", c);
   }
-  if (text !== lastInfo) infoEl.textContent = lastInfo = text;
-}
 
-// Live ticker — the pulse of the 30-year piece
-function startTicker() {
-  if (tickerRunning) return;
-  tickerRunning = true;
-  const tick = () => {
-    updateInfo();
-    requestAnimationFrame(tick);
+  function formatRemaining(ms) {
+    const years = Math.floor(ms / (365.25 * 86400000));
+    const days  = Math.floor((ms % (365.25 * 86400000)) / 86400000);
+    const hrs   = Math.floor((ms % 86400000) / 3600000);
+    const min   = Math.floor((ms % 3600000) / 60000);
+    const sec   = Math.floor((ms % 60000) / 1000);
+    const millis = String(ms % 1000).padStart(3, "0");
+
+    return years > 0
+      ? `${years}y ${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`
+      : `${days}d ${hrs}:${min.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}.${millis}`;
+  }
+
+  function updateInfo() {
+    const now = Date.now();
+    let text;
+
+    if (now < END) {
+      const progress = ((now - START) / TOTAL) * 100;
+      text = `${progress.toFixed(6)}% aged — ${formatRemaining(END - now)} remaining`;
+    } else {
+      const daysSince = Math.floor((now - END) / 86400000);
+      const state = daysSince % 2 === 0 ? "OLD" : "YOUNG";
+      text = `ETERNAL CYCLE • DAY ${daysSince} • CURRENTLY ${state}`;
+    }
+
+    if (text !== lastInfo) {
+      infoEl.textContent = lastInfo = text;
+    }
+  }
+
+  // Smart ticker: 1000 ms during the 30-year run, 60000 ms after 2055
+  function startTicker() {
+    if (tickerInterval) clearInterval(tickerInterval);
+
+    const now = Date.now();
+    const interval = now < END ? 1000 : 60000;   // 1 second while aging, 1 minute in eternal cycle
+
+    updateInfo(); // immediate update
+    tickerInterval = setInterval(updateInfo, interval);
+  }
+
+  function nextPortrait() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+
+    current = (current + 1) % portraits.length;
+    const p = portraits[current];
+
+    if (firstLoad) {
+      iframe.src = p.file;
+      firstLoad = false;
+    } else {
+      iframe.style.opacity = "0";
+      setTimeout(() => {
+        iframe.src = p.file + "?v=" + (++cacheBuster);
+      }, 700);
+    }
+
+    applyTheme(p.color);
+    assetEl.href = p.asset;
+    startTicker(); // refresh interval in case we just crossed into post-2055
+  }
+
+  iframe.onload = () => {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      iframe.style.opacity = "1";
+      isTransitioning = false;
+    }));
   };
-  tick();
-}
 
-function nextPortrait() {
-  if (isTransitioning) return;
-  isTransitioning = true;
-
-  current = (current + 1) % portraits.length;
-  const p = portraits[current];
-
-  if (firstLoad) {
-    iframe.src = p.file;
-    firstLoad = false;
-  } else {
-    iframe.style.opacity = "0";
-    setTimeout(() => {
-      iframe.src = p.file + "?v=" + (++cacheBuster);
-    }, 700);
-  }
-
-  applyTheme(p.color);
-  updateInfo();
-  assetEl.href = p.asset;
-}
-
-iframe.onload = () => {
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    iframe.style.opacity = "1";
-    isTransitioning = false;
-  }));
-};
-
-const advance = (e) => {
-  if (e.target.closest("a")) return;
-  e.preventDefault();
-  nextPortrait();
-};
-
-document.addEventListener("keydown", e => {
-  if (["ArrowRight", " ", "Enter"].includes(e.key)) {
+  const advance = (e) => {
+    if (e.target.closest("a")) return;
     e.preventDefault();
     nextPortrait();
-  }
-});
+  };
 
-document.addEventListener("pointerdown", advance);
-document.querySelector("footer").addEventListener("pointerdown", advance);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", " ", "Enter"].includes(e.key)) {
+      e.preventDefault();
+      nextPortrait();
+    }
+  });
 
-// ONE AND ONLY load handler — random start + live ticker
-window.addEventListener("load", () => {
-  current = Math.floor(Math.random() * portraits.length) - 1;
-  nextPortrait();
-  startTicker();
-});
+  document.addEventListener("pointerdown", advance);
+  document.querySelector("footer").addEventListener("pointerdown", advance);
+
+  // Initial load
+  window.addEventListener("load", () => {
+    current = Math.floor(Math.random() * portraits.length) - 1;
+    nextPortrait();        // loads random portrait, sets theme, starts proper ticker
+  });
 </script>
 </body>
 </html>
