@@ -41,26 +41,38 @@
   .timelapse-prompt:hover, .timelapse-prompt:active { opacity:1; transform:translateX(4px); }
   .timelapse-prompt:active { transform:translateX(8px) scale(1.08); }
 
-  /* TIMELAPSE OVERLAY — 2× & CENTERED */
+  /* TIMELAPSE OVERLAY — EXACTLY 2× DEFAULT SIZE, NO FULLSCREEN */
   #timelapse-overlay {
     position:fixed; inset:0; background:rgba(0,0,0,0.96);
     display:grid; place-items:center; opacity:0; pointer-events:none;
     transition:opacity .62s cubic-bezier(.22,1,.36,1); z-index:100;
   }
   #timelapse-overlay.visible { opacity:1; pointer-events:all; }
+
   #timelapse-container {
     position:relative;
-    width:92vmin; height:51.75vmin;
-    max-width:92vh; max-height:51.75vh;
-    transform:scale(2); transform-origin:center;
+    width:160vmin;
+    height:90vmin;              
+    box-shadow:0 20px 60px rgba(0,0,0,0.8);
   }
-  #timelapse-container iframe { width:100%; height:100%; border:none; background:#000; }
+  #timelapse-container iframe {
+    width:100%; height:100%; border:none; background:#000;
+  }
   #timelapse-close {
-    position:absolute; top:-68px; left:50%; transform:translateX(-50%);
+    position:absolute; top:-64px; left:50%; transform:translateX(-50%);
     color:#fff; font-size:13px; letter-spacing:2px; cursor:pointer; opacity:.7;
     transition:opacity .3s;
   }
   #timelapse-close:hover { opacity:1; }
+
+  /* Mobile: slightly smaller 2× to avoid feeling cramped */
+  @media (max-width:840px) {
+    #timelapse-container {
+      width:92vw;
+      height:51.75vw;     /* maintains 16:9 */
+      max-height:82vh;
+    }
+  }
 
   /* PORTRAIT FRAME */
   #frame {
@@ -75,10 +87,10 @@
     color:var(--accent); -webkit-text-stroke:1.4px #fff; text-stroke:1.4px #fff; paint-order:stroke fill;
   }
 
-  /* MOBILE LAYOUT — FIXED OVERLAP */
+  /* MOBILE LAYOUT */
   @media (max-width:840px) {
     html,body { height:auto; min-height:100vh; overflow-y:auto; overflow-x:hidden; }
-    body { grid-template-rows:auto 1fr auto; } /* header → portrait → footer */
+    body { grid-template-rows:auto 1fr auto; }
 
     header { padding:16px 20px 10px; gap:14px; }
     .header-top { flex-direction:column; gap:12px; align-items:flex-start; }
@@ -86,22 +98,17 @@
     .collection-link, .asset-link, .timelapse-prompt, .prompt { align-self:flex-end; }
     .info { font-size:12.5px; align-self:flex-end; }
 
-    #timelapse-container { width:96vmin; height:54vmin; }
-
     #frame { height:auto; min-height:60vh; max-height:70vh; }
 
     footer {
       position:static;
-      padding:40px 20px 100px; /* generous bottom padding */
+      padding:40px 20px 100px;
       background:#fff;
       pointer-events:all;
       z-index:20;
     }
     .benediction {
-      font-size:14.2px;
-      line-height:1.42;
-      max-width:92%;
-      margin:0 auto;
+      font-size:14.2px; line-height:1.42; max-width:92%; margin:0 auto;
     }
   }
 
@@ -152,17 +159,17 @@
 <div class="loading-text" id="loadingText"><strong>Loading portrait …</strong></div>
 <iframe id="frame" src="" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
 
-<!-- TIMELAPSE OVERLAY -->
+<!-- TIMELAPSE OVERLAY — 2× DEFAULT SIZE -->
 <div id="timelapse-overlay">
   <div id="timelapse-container">
     <div id="timelapse-close">× CLOSE</div>
-    <iframe src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    <iframe src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
 </div>
 
 <footer>
   <div class="benediction">
-    Mind is living; mechanism is law.<br>
+    <strong>Mind is living; mechanism is law.<br>
     Machines extend the reach of mind but not its life.<br>
     Their power and precision await the guidance of personality and the direction of spirit.<br><br>
     When mind forgets spirit, civilization hardens into mechanism;<br>
@@ -173,7 +180,7 @@
     Thus, the enduring task of every age is not to make mechanisms more human,<br>
     but to make humans more spiritual—<br>
     that through enlightened mind and inspired art,<br>
-    the material creations of man may become the luminous instruments of God.
+    the material creations of man may become the luminous instruments of God.</strong>
   </div>
 </footer>
 
